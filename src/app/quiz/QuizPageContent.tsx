@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -33,7 +33,8 @@ export default function QuizPageContent() {
   const searchParams = useSearchParams();
   const unit = searchParams.get("unit") || "";
 
-  const fetchQuestion = async () => {
+  // ✅ useCallback으로 감싸서 useEffect 의존성 문제 해결
+  const fetchQuestion = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/question", {
@@ -60,13 +61,13 @@ export default function QuizPageContent() {
       console.error("❌ 문제 로딩 중 오류", err);
     }
     setLoading(false);
-  };
+  }, [unit]);
 
   const question = questions[current];
 
   useEffect(() => {
     fetchQuestion();
-  }, []);
+  }, [fetchQuestion]);
 
   useEffect(() => {
     if (!question || showAnswer || loading) return;
@@ -83,18 +84,17 @@ export default function QuizPageContent() {
     return () => clearInterval(timer);
   }, [question, showAnswer, loading]);
 
-  const handleAnswer = (choiceIndex: number | null) => {
+  const handleAnswer = useCallback((choiceIndex: number | null) => {
     if (selected !== null) return;
     setSelected(choiceIndex);
     setShowAnswer(true);
     if (choiceIndex === question?.correctIndex) {
       setScore((prev) => prev + 1);
     }
-  };
+  }, [selected, question]);
 
   const handleNext = async () => {
     const next = current + 1;
-
     if (next >= 5) {
       setShowScore(true);
       return;
