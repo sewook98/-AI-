@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic"; // 이 줄을 추가하세요
+
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
