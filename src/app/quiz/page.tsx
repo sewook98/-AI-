@@ -3,9 +3,10 @@
 
 import { Suspense } from "react";
 import QuizPageContent from "./QuizPageContent";
+
 export default function QuizPage() {
   return (
-    <Suspense fallback={<p>로딩 중...</p>}>
+    <Suspense fallback={<div>로딩 중...</div>}>
       <QuizPageContent />
     </Suspense>
   );
